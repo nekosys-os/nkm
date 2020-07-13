@@ -21,6 +21,7 @@ typedef enum {
 #define TYPE_NKS_TOOL 2
 typedef struct {
     const char *name;
+    const char *command;
     nks_invoke_type invoke_type;
 } nks_tool;
 
@@ -32,14 +33,17 @@ typedef struct {
 
 #define TYPE_NKS_TOOL_INVOCATION 4
 typedef struct {
-    const char *toolName;
+    const char *tool_name;
     vector *params;
 } nks_tool_invocation;
 
 #define TYPE_NKS_TOOL_PARAM 5
 typedef struct {
     const char *key;
-    const char *val;
+    vector *values;
 } nks_tool_param;
+
+#define TYPE_NKS_RAW_COMMAND 6
+
 
 #endif //NKM_MODEL_H

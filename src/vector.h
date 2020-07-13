@@ -11,8 +11,8 @@ typedef struct {
 } vector_node;
 
 typedef struct {
+    int capacity;
     int size;
-    int offset;
     vector_node** nodes;
 } vector;
 

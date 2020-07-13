@@ -8,21 +8,22 @@
 
 vector *vector_create(int size) {
     vector *vec = malloc(sizeof(vector));
-    vec->size = size;
-    vec->offset = 0;
-    vec->nodes = malloc(sizeof(vector_node*) * vec->size);
+    vec->capacity = size;
+    vec->size = 0;
+    vec->nodes = malloc(sizeof(vector_node*) * vec->capacity);
     return vec;
 }
 
 void vector_append(vector *vec, int node_type, void *data) {
-    if (vec->offset >= vec->size - 1) {
-        vec->size *= 2;
-        vec->nodes = realloc(vec->nodes, sizeof(vector_node*) * vec->size);
+    if (vec->size >= vec->capacity - 1) {
+        vec->capacity *= 2;
+        vec->nodes = realloc(vec->nodes, sizeof(vector_node*) * vec->capacity);
     }
     vector_node *node = malloc(sizeof(vector_node));
     node->node_type = node_type;
     node->node_ptr = data;
-    vec->nodes[vec->offset] = node;
+    vec->nodes[vec->size] = node;
+    vec->size++;
 }
 
 void vector_destroy(vector *vec) {

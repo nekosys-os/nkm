@@ -6,6 +6,7 @@
 #include "options.h"
 #include "version.h"
 #include "parser.h"
+#include "runner.h"
 
 void print_version() {
     printf("%s (%s) v%s by %s \n", NKM_NAME_LONG, NKM_NAME_SHORT, NKM_VERSION, NKM_AUTHOR);
@@ -27,66 +28,31 @@ void run_builder(nkm_options *options) {
         return;
     }
 
-    parser_ctx *ctx;
-    int status = parser_init(options, &ctx);
+    parser_ctx *parser_ctx;
+    int status = parser_init(options, &parser_ctx);
 
     if (status != 0) {
         printf("error: Cannot open build file");
         return;
     }
 
-    parser_parse(ctx);
+    parser_parse(parser_ctx);
 
-    if (ctx->failed) {
+    if (parser_ctx->failed) {
         printf("fatal: Invalid build script!");
+        parser_destroy(parser_ctx);
         return;
     }
-    printf("Parser completed!\n");
 
-    vector *build_script = ctx->build_script;
-    for (int i = 0; i < build_script->size; i++) {
-        vector_node *node = build_script->nodes[i];
+    runner_ctx *runner_ctx = runner_create(options->target, parser_ctx->build_script);
+    runner_exec(runner_ctx);
 
-        if (node->node_type == TYPE_NKS_CONSTANT) {
-            nks_constant *constant = node->node_ptr;
-            printf("CONSTANT: %s=%s\n", constant->name, constant->value);
-        } else if (node->node_type == TYPE_NKS_TOOL) {
-            nks_tool *tool = node->node_ptr;
-            printf("TOOLDEF: %s (%d): %s\n", tool->name, tool->invoke_type, tool->command);
-        } else if (node->node_type == TYPE_NKS_TARGET) {
-            nks_target *target = node->node_ptr;
-            vector *commands = target->commands;
-            printf("TARGET: %s (%d commands)\n", target->name, commands->size);
-
-            for (int j = 0; j < commands->size; j++) {
-                vector_node *command_node = commands->nodes[j];
-                if (command_node->node_type == TYPE_NKS_RAW_COMMAND) {
-                    const char *raw_data = command_node->node_ptr;
-                    printf("  raw: %s\n", raw_data);
-                } else if (command_node->node_type == TYPE_NKS_TOOL_INVOCATION) {
-                    nks_tool_invocation *invocation = command_node->node_ptr;
-                    vector *params = invocation->params;
-                    printf("  invoke: %s (%d params)\n", invocation->tool_name, invocation->params->size);
-
-                    for (int k = 0; k < params->size; k++) {
-                        nks_tool_param *param = params->nodes[k]->node_ptr;
-                        vector *values = param->values;
-                        printf("    %s = [%d]\n", param->key, values->size);
-                        for (int l = 0; l < values->size; l++) {
-                            const char *value = values->nodes[l]->node_ptr;
-                            printf("     - %s\n", value);
-                        }
-                    }
-                }
-            }
-
-        } else {
-            printf("warn: Unknown node_type %d\n", node->node_type);
-        }
-
+    if (runner_ctx->failed) {
+        printf("fatal: Build execution failed");
     }
 
-    parser_destroy(ctx);
+    runner_destroy(runner_ctx);
+    parser_destroy(parser_ctx);
 }
 
 int main(int argc, char **argv) {

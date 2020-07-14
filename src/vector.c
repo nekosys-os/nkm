@@ -15,7 +15,7 @@ vector *vector_create(int size) {
 }
 
 void vector_append(vector *vec, int node_type, void *data) {
-    if (vec->size >= vec->capacity - 1) {
+    if (vec->size >= vec->capacity) {
         vec->capacity *= 2;
         vec->nodes = realloc(vec->nodes, sizeof(vector_node*) * vec->capacity);
     }

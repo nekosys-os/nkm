@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "runner.h"
+#include "stringbuilder.h"
 
 runner_ctx *runner_create(const char *target, vector *build_script) {
     runner_ctx *ctx = malloc(sizeof(runner_ctx));
@@ -62,8 +63,83 @@ void runner_run_target(runner_ctx *ctx, nks_target *target) {
     }
 }
 
+nks_tool_param *find_param(vector *params, const char *name) {
+    for (int i = 0; i < params->size; i++) {
+        nks_tool_param *param = params->nodes[i]->node_ptr;
+        if (strcmp(param->key, name) == 0)
+            return param;
+    }
+    return NULL;
+}
+
+nks_constant *find_constant(runner_ctx *ctx, const char *name) {
+    for (int i = 0; i < ctx->build_script->size; i++) {
+        vector_node *node = ctx->build_script->nodes[i];
+        if (node->node_type == TYPE_NKS_CONSTANT) {
+            nks_constant *constant = node->node_ptr;
+            if (strcmp(constant->name, name) == 0)
+                return constant;
+        }
+    }
+    return NULL;
+}
+
 void exec_tool(runner_ctx *ctx, nks_tool *tool, vector *params) {
-    
+    const char *command_template = tool->command;
+    int command_template_len = strlen(command_template);
+
+    string_builder *cmd_builder = sb_create(command_template_len);
+    string_builder *argument_builder = sb_create(8);
+    string_builder *default_val_builder = sb_create(8);
+
+    char prev_char = '\0';
+    bool in_argument = false;
+    bool in_default_val = false;
+    for (int i = 0; i < command_template_len; i++) {
+        char chr = command_template[i];
+        if (chr == '{' && prev_char != '\\') {
+            in_argument = true;
+        } else if (chr == '}' && prev_char != '\\') {
+            in_argument = false;
+            in_default_val = false;
+            nks_tool_param *param = find_param(params, argument_builder->text);
+            if (param == NULL) {
+                if (default_val_builder->size > 0) {
+                    sb_append_str(cmd_builder, default_val_builder->text);
+                } else {
+                    nks_constant *constant = find_constant(ctx, argument_builder->text);
+                    if (constant == NULL) {
+                        runner_fail(ctx, "Parameter without default value not supplied or Undefined reference!");
+                        return;
+                    } else {
+                        sb_append_str(cmd_builder, constant->value);
+                    }
+                }
+            } else {
+                for (int j = 0; j < param->values->size; j++) {
+                    const char *value = param->values->nodes[j]->node_ptr;
+                    sb_append_str(cmd_builder, value);
+                    sb_append_chr(cmd_builder, ' ');
+                }
+            }
+
+            if (default_val_builder->size > 0)
+                sb_reset(default_val_builder);
+            sb_reset(argument_builder);
+        } else if (chr == '=' && prev_char != '\\') {
+            in_default_val = true;
+        } else if (!in_argument) {
+            sb_append_chr(cmd_builder, chr);
+        } else {
+            sb_append_chr(in_default_val ? default_val_builder : argument_builder, chr);
+        }
+
+        prev_char = chr;
+    }
+
+    printf("%s\n", cmd_builder->text);
+
+    free(cmd_builder);
 }
 
 void runner_fail(runner_ctx *ctx, const char *message) {

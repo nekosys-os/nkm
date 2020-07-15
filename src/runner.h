@@ -11,12 +11,13 @@
 #include "vector.h"
 
 typedef struct {
+    const char *working_dir;
     const char *target;
     vector *build_script;
     bool failed;
 } runner_ctx;
 
-runner_ctx *runner_create(const char *target, vector *build_script);
+runner_ctx *runner_create(const char *working_dir, const char *target, vector *build_script);
 
 void runner_exec(runner_ctx *ctx);
 

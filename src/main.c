@@ -44,7 +44,7 @@ void run_builder(nkm_options *options) {
         return;
     }
 
-    runner_ctx *runner_ctx = runner_create(options->target, parser_ctx->build_script);
+    runner_ctx *runner_ctx = runner_create(options->working_dir, options->target, parser_ctx->build_script);
     runner_exec(runner_ctx);
 
     if (runner_ctx->failed) {

@@ -9,9 +9,10 @@
 #include "runner.h"
 #include "stringbuilder.h"
 
-runner_ctx *runner_create(const char *target, vector *build_script) {
+runner_ctx *runner_create(const char *working_dir, const char *target, vector *build_script) {
     runner_ctx *ctx = malloc(sizeof(runner_ctx));
     ctx->failed = false;
+    ctx->working_dir = working_dir;
     ctx->build_script = build_script;
     ctx->target = target;
     return ctx;
@@ -84,6 +85,27 @@ nks_constant *find_constant(runner_ctx *ctx, const char *name) {
     return NULL;
 }
 
+char *resolve_path(runner_ctx *ctx, const char *path) {
+    if (strstr(path, "*") != NULL) {
+        string_builder *base_dir_builder = sb_create(32);
+        sb_append_str(base_dir_builder, ctx->working_dir);
+        sb_append_chr(base_dir_builder, '/');
+
+        int path_len = strlen(path);
+        for (int i = 0; i < path_len; i++) {
+            char c = path[i];
+            if (c == '*')
+                break;
+            sb_append_chr(base_dir_builder, c);
+        }
+
+        printf("Resolving path %s\n", base_dir_builder->text);
+
+        free(base_dir_builder);
+        return path;
+    } else return path;
+}
+
 void exec_tool(runner_ctx *ctx, nks_tool *tool, vector *params) {
     const char *command_template = tool->command;
     int command_template_len = strlen(command_template);
@@ -91,6 +113,15 @@ void exec_tool(runner_ctx *ctx, nks_tool *tool, vector *params) {
     string_builder *cmd_builder = sb_create(command_template_len);
     string_builder *argument_builder = sb_create(8);
     string_builder *default_val_builder = sb_create(8);
+
+    for (int i = 0; i < params->size; i++) {
+        nks_tool_param *param = params->nodes[i]->node_ptr;
+        if (strcmp(param->key, "input") == 0) {
+            for (int j = 0; j < param->values->size; j++) {
+                param->values->nodes[j]->node_ptr = resolve_path(ctx, param->values->nodes[j]->node_ptr);
+            }
+        }
+    }
 
     char prev_char = '\0';
     bool in_argument = false;

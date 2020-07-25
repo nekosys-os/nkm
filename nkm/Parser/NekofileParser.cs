@@ -3,9 +3,6 @@ using nkm.Logging;
 using nkm.Utils;
 using System;
 using System.IO;
-using System.Net.Mail;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace nkm.Parser
 {
@@ -13,7 +10,12 @@ namespace nkm.Parser
     {
         public Nekofile Document { get; private set; }
 
-        private StreamReader reader;
+        private readonly StreamReader reader;
+
+        private ToolDefExpr currentTool;
+        private TargetDefExpr currentTarget;
+        private ToolInvokeExpr currentToolInvoke;
+        private string currentToolParam;
 
         public NekofileParser(FileInfo info)
         {
@@ -44,10 +46,6 @@ namespace nkm.Parser
             return true;
         }
 
-        private ToolDefExpr currentTool;
-        private TargetDefExpr currentTarget;
-        private ToolInvokeExpr currentToolInvoke;
-        private string currentToolParam;
 
         private void ParseLine(int no, string line)
         {

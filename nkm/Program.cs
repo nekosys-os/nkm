@@ -38,7 +38,7 @@ namespace nkm
             LoggerFactory.Current.Log(LogLevel.Info, $"Building {targetName} in script {buildScript.FullName}...");
 
             var runner = new NekofileRunner(parser.Document);
-            if (!runner.Execute())
+            if (!runner.Execute(target))
             {
                 LoggerFactory.Current.Log(LogLevel.Error, "Build failed!");
                 return;

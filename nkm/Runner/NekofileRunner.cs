@@ -1,7 +1,5 @@
 ﻿using nkm.AST;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using nkm.Logging;
 
 namespace nkm.Runner
 {
@@ -14,9 +12,22 @@ namespace nkm.Runner
             this.nekofile = nekofile;
         }
 
-        public bool Execute()
+        public bool Execute(string target)
         {
+            foreach (var expr in nekofile.Expressions)
+            {
+                if (expr is TargetDefExpr targetExpr && (target == string.Empty || targetExpr.Name == target))
+                {
+                    ExecuteTarget(targetExpr);
+                }
+            }
+
             return true;
+        }
+
+        private void ExecuteTarget(TargetDefExpr target)
+        {
+            LoggerFactory.Current.Log(LogLevel.Info, $"Building target {target.Name}...");
         }
     }
 }

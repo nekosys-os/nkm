@@ -68,7 +68,8 @@ namespace nkm.Parser
                 }
                 else if (line.StartsWith("["))
                 {
-                    Expect(no, line, ']');
+                    Expect(no, line, ']');  // Must have a closing bracket
+                    Expect(no, line, ':');  // Must have the colon to make it a define
 
                     var name = line.Substring(1); // Skip the opening bracket
                     var strategy = InvokeStrategy.Multi;
@@ -88,6 +89,10 @@ namespace nkm.Parser
                 else if (line.Contains(":"))
                 {
                     Document.Expressions.Add(currentTarget = new TargetDefExpr { Name = EnsureNotEmpty(no, line.Before(":"), "Cannot have empty target name!") });
+                }
+                else
+                {
+                    Error(no, $"Unknown top level statement!");
                 }
             }
             else if (level == 1)

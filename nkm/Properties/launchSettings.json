@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "nkm": {
+      "commandName": "Project",
+      "workingDirectory": "E:\\OSdev\\nekosys"
+    }
+  }
+}

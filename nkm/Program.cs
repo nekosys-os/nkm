@@ -3,6 +3,7 @@ using nkm.Parser;
 using nkm.Runner;
 using System;
 using System.IO;
+using System.Reflection;
 
 namespace nkm
 {
@@ -10,7 +11,8 @@ namespace nkm
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("NekoMake BuildSystem (nkm) v0.1.0 by Twometer");
+            var version = Assembly.GetExecutingAssembly().GetName().Version;
+            Console.WriteLine($"NekoMake BuildSystem (nkm) v{version.Major}.{version.Minor}.{version.Revision} by Twometer");
 
             LoggerFactory.ForceLogger(new ConsoleLogger());
             

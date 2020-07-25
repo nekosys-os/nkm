@@ -3,6 +3,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Version>0.1.0</Version>
+    <Authors>Twometer</Authors>
+    <Product>NekoMake Build System</Product>
+    <Description>The NekoMake build system is the next-gen and convenient build system used by the nekosys OS</Description>
+    <PackageProjectUrl>https://github.com/nekosys-os/nkm</PackageProjectUrl>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
   </PropertyGroup>
 
 </Project>

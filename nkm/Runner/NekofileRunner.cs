@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace nkm.Runner
 {
@@ -158,7 +159,21 @@ namespace nkm.Runner
 
         private void ExecuteCommand(string command)
         {
-            var process = Process.Start(command);
+            var startInfo = new ProcessStartInfo();
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                startInfo.FileName = "cmd.exe";
+                startInfo.Arguments = "/C " + command;
+            }
+            else
+            {
+                startInfo.FileName = "sh";
+                var escapedArgs = command.Replace("\"", "\\\""); 
+                startInfo.Arguments = $"-c \"{escapedArgs}\"";
+            }
+
+            var process = Process.Start(startInfo);
             process.WaitForExit();
             if (process.ExitCode != 0)
                 throw new Exception($"The command '{command}' terminated with non-zero exit code {process.ExitCode}");

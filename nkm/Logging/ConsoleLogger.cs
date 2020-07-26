@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace nkm.Logging
 {
@@ -6,6 +7,9 @@ namespace nkm.Logging
     {
         public void Log(LogLevel level, string message)
         {
+            if (level == LogLevel.Debug && !Debugger.IsAttached)
+                return;
+
             switch (level)
             {
                 case LogLevel.Debug:

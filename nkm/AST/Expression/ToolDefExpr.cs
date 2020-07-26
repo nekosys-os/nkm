@@ -8,7 +8,7 @@ namespace nkm.AST
     {
         public string Name { get; set; }
 
-        public string CommandTemplate { get; set; }
+        public CommandTemplate CommandTemplate { get; set; }
 
         public InvokeStrategy InvokeStrategy { get; set; }
     }

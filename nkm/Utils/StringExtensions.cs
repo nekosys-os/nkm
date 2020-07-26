@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace nkm.Utils
+﻿namespace nkm.Utils
 {
     public static class StringExtensions
     {
@@ -13,7 +9,7 @@ namespace nkm.Utils
         }
 
         public static string After(this string str, string seperator)
-        {
+        {   
             return str.Substring(str.IndexOf(seperator) + seperator.Length).Trim();
         }
 

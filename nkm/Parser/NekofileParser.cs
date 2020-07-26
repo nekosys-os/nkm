@@ -40,6 +40,7 @@ namespace nkm.Parser
             catch (Exception e)
             {
                 LoggerFactory.Current.Log(LogLevel.Error, e.Message);
+                LoggerFactory.Current.Log(LogLevel.Debug, e.ToString());
                 return false;
             }
 
@@ -104,7 +105,7 @@ namespace nkm.Parser
                 {
                     if (currentTool.CommandTemplate != null)
                         Error(no, "A tool can only hold a single command template!");
-                    else currentTool.CommandTemplate = line;
+                    else currentTool.CommandTemplate = CommandTemplateParser.Parse(line);
                 }
                 else if (currentTarget != null)
                 {

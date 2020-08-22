@@ -1,4 +1,5 @@
 ﻿using nkm.AST;
+using nkm.AST.Expression;
 using nkm.Logging;
 using nkm.Utils;
 using System;
@@ -116,7 +117,14 @@ namespace nkm.Parser
                     }
                     else if (currentToolInvoke == null)
                     {
-                        currentTarget.Commands.Add(new RawCommandExpr { Value = line });
+                        if (line.StartsWith("%"))
+                        {
+                            currentTarget.Commands.Add(new TargetInvokeExpr { TargetName = line.Substring(1).Trim() });
+                        }
+                        else
+                        {
+                            currentTarget.Commands.Add(new RawCommandExpr { Value = line });
+                        }
                     }
                     else
                     {

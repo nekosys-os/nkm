@@ -36,8 +36,10 @@ namespace nkm
                 return;
             }
 
-            var targetName = target == string.Empty ? "all targets" : target;
-            LoggerFactory.Current.Log(LogLevel.Info, $"Building {targetName} in script {buildScript.FullName}...");
+            if (target == string.Empty)
+                target = "default";
+
+            LoggerFactory.Current.Log(LogLevel.Info, $"Building {target} in script {buildScript.FullName}...");
 
             var runner = new NekofileRunner(parser.Document);
             if (!runner.Execute(target))

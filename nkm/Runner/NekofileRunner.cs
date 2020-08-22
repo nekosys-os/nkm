@@ -1,4 +1,5 @@
 ﻿using nkm.AST;
+using nkm.AST.Expression;
 using nkm.Logging;
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ namespace nkm.Runner
             {
                 foreach (var expr in nekofile.Expressions)
                 {
-                    if (expr is TargetDefExpr targetExpr && (target == string.Empty || targetExpr.Name == target))
+                    if (expr is TargetDefExpr targetExpr && targetExpr.Name == target)
                     {
                         ExecuteTarget(targetExpr);
                     }
@@ -57,6 +58,10 @@ namespace nkm.Runner
                 else if (cmd is ToolInvokeExpr invokeCmd)
                 {
                     InvokeTool(invokeCmd);
+                }
+                else if (cmd is TargetInvokeExpr targetCmd)
+                {
+                    Execute(targetCmd.TargetName);
                 }
             }
         }
@@ -169,7 +174,7 @@ namespace nkm.Runner
             else
             {
                 startInfo.FileName = "sh";
-                var escapedArgs = command.Replace("\"", "\\\""); 
+                var escapedArgs = command.Replace("\"", "\\\"");
                 startInfo.Arguments = $"-c \"{escapedArgs}\"";
             }
 

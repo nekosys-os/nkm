@@ -1,0 +1,77 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Nekofile",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#variables"
+		},
+		{
+			"include": "#entities"
+		},
+		{
+			"include": "#support"
+		}
+	],
+	"repository": {
+		"comments": {
+			"name": "comment.line.semicolon.nekofile",
+			"begin": ";",
+			"end": "(\\r|\\n)"
+		},
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.other.nekofile",
+					"match": "\\b(single|multi)\\b"
+				},
+				{
+					"name": "keyword.control.nekofile",
+					"match": "(\\[\\w+\\]|\\[.+,|\\]:)"
+				}
+			]
+		},
+		"variables": {
+			"patterns": [
+				{
+					"name": "variable.parameter.nekofile",
+					"begin": "{",
+					"end": "}"
+				},
+				{
+					"name": "variable.other.nekofile",
+					"match": "[A-Za-z]+\\s*=.+(\\r|\\n)"
+				}
+			]
+		},
+		"entities": {
+			"name": "entity.name.tag",
+			"match": "[A-Za-z]*:"
+		},
+		"support": {
+			"name": "support.function.nekofile",
+			"begin": "%",
+			"end": "(\\r|\\n)"
+		},
+		"strings": {
+			"name": "string.quoted.double.nekofile",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.nekofile",
+					"match": "\\\\."
+				}
+			]
+		}
+	},
+	"scopeName": "source.nekofile"
+}

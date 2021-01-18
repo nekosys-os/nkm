@@ -1,0 +1,25 @@
+{
+    "name": "nekofile-language",
+    "displayName": "Nekofile Language",
+    "description": "Provides syntax highlighting for Nekofiles",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.52.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "nekofile",
+            "aliases": ["Nekofile", "nekofile"],
+            "extensions": ["Nekofile"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "nekofile",
+            "scopeName": "source.nekofile",
+            "path": "./syntaxes/nekofile.tmLanguage.json"
+        }]
+    }
+}
